@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.iotdemo.mapper.DeviceMapper">
+    <!--    自定义映射规则resultMap-->
+    <resultMap id="DeviceEntityMap" type="com.example.iotdemo.entity.Device">
+        <!--        主键不可省略-->
+        <id column="device_id" property="deviceID"/>
+        <result column="device_name" property="deviceName"/>
+
+    </resultMap>
+
+    <!-- 查找所有设备 -->
+    <select id="findAllDevice" resultMap="DeviceEntityMap">
+        SELECT
+        *
+        FROM
+        t_device
+    </select>
+
+</mapper>

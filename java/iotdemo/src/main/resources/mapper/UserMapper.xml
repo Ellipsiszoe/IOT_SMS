@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.iotdemo.mapper.UserMapper">
+    <!--    自定义映射规则resultMap-->
+    <resultMap id="UserEntityMap" type="com.example.iotdemo.entity.User">
+        <!--        主键不可省略-->
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="role" property="role"/>
+    </resultMap>
+    <!-- 插入用户数据：Integer insert(User user) -->
+    <!--
+        useGeneratedKeys：某个字段值递增
+        keyProperty：主键
+    -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        t_user (username, password, salt, role)
+        VALUES
+        (#{username}, #{password}, #{salt}, #{role})
+    </insert>
+
+    <!-- 根据用户名查询用户数据：User findByUsername(String username) -->
+    <!-- 指定resultType
+         定义resultMap-->
+    <select id="findByUsername" resultMap="UserEntityMap">
+        SELECT
+        *
+        FROM
+        t_user
+        WHERE
+        username = #{username}
+    </select>
+    <select id="findAllUser" resultMap="UserEntityMap">
+        SELECT
+        *
+        FROM
+        t_user
+    </select>
+
+    <!-- 修改权限和重置密码-->
+    <update id="changeRole">
+        UPDATE
+        t_user
+        SET
+        role = #{role}
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="resetPassword">
+        UPDATE
+        t_user
+        SET
+        password = #{password},
+        salt = #{salt}
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

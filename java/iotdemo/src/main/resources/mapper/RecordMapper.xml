@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--xmlns="http://mybatis.org/schema/mybatis-mapper"-->
+<mapper namespace="com.example.iotdemo.mapper.RecordMapper">
+    <!--    自定义映射规则resultMap-->
+    <resultMap id="RecordEntityMap" type="com.example.iotdemo.entity.RandomRecord">
+        <!--        主键不可省略-->
+        <id column="record_ID" property="rid"/>
+        <result column="type" property="type"/>
+        <result column="value" property="value"/>
+        <result column="date" property="date"/>
+        <result column="time" property="time"/>
+    </resultMap>
+    <resultMap id="WeekRecordEntityMap" type="com.example.iotdemo.entity.WeekRecord">
+        <result column="date" property="date"/>
+        <result column="average" property="avg"/>
+    </resultMap>
+    <resultMap id="24hRecordEntityMap" type="com.example.iotdemo.entity.DayRecord">
+        <result column="hour" property="hour"/>
+        <result column="average" property="avg"/>
+    </resultMap>
+    <resultMap id="DHT11RecordEntityMap" type="com.example.iotdemo.entity.DHT11Record">
+        <!--        主键不可省略-->
+        <id column="record_id" property="rid"/>
+        <result column="humidity" property="humidity"/>
+        <result column="temperature" property="temperature"/>
+        <result column="heat" property="heat"/>
+        <result column="date" property="date"/>
+    </resultMap>
+    <!--最多100条数据-->
+    <select id="findRecordByDate" resultMap="RecordEntityMap">
+        SELECT *
+        FROM t_random
+        WHERE date between #{date1} AND  #{date2}
+        ORDER BY date DESC,time DESC
+        LIMIT 100
+    </select>
+    <select id="findWeekData" resultMap="WeekRecordEntityMap">
+        SELECT date ,AVG(value) as average
+        FROM t_random
+        WHERE date between DATE_SUB(#{date},INTERVAL 7 DAY) AND  #{date} and type = #{type}
+        GROUP BY date
+        ORDER BY date ;
+    </select>
+    <select id="find24hData" resultMap="24hRecordEntityMap">
+        SELECT HOUR(e.time) as hour ,avg(e.value) as average
+	    FROM t_random e
+	    WHERE e.date = #{date} and type = #{type}
+	    GROUP BY HOUR(e.time)
+	    ORDER BY Hour(e.time);
+    </select>
+    <!--最多100条数据-->
+    <select id="findAllDHT11Record" resultMap="DHT11RecordEntityMap">
+        SELECT *
+        FROM t_dht11
+        ORDER BY date DESC
+        LIMIT 100
+    </select>
+
+    <insert id="insertRandomRecord" useGeneratedKeys="true" keyProperty="rid">
+        INSERT INTO
+            t_random (record_ID, type, value, date, time)
+        VALUES
+            (#{rid}, #{type},  #{value}, #{date}, #{time})
+    </insert>
+    <insert id="insertDHT11Record" useGeneratedKeys="true" keyProperty="rid">
+        INSERT INTO
+            t_dht11 (record_id, humidity, temperature, heat, date)
+        VALUES
+            (#{rid}, #{humidity},  #{temperature}, #{heat}, #{date})
+    </insert>
+
+</mapper>
